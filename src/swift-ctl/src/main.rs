@@ -17,17 +17,19 @@ use zbus::{Connection, proxy};
 use clap::{Parser, Subcommand};
 use futures_util::StreamExt;
 
-// how it see swift-cfg daemon
+// Updated proxy to match the new multi-section daemon interface
 #[proxy(
     interface = "org.swift.Config",
     default_service = "org.swift.Config",
     default_path = "/org/swift/Config"
 )]
 trait SwiftConfig {
-    async fn get_property(&self, key: &str) -> zbus::Result<String>;
-    async fn set_property(&self, key: &str, value: &str) -> zbus::Result<()>;
+    // Now functions take 'section' and 'key'
+    async fn get_value(&self, section: &str, key: &str) -> zbus::Result<String>;
+    async fn set_value(&self, section: &str, key: &str, value: &str) -> zbus::Result<()>;
+    
     #[zbus(signal)]
-    fn notify(&self, key: &str, value: &str) -> zbus::Result<()>;
+    fn notify(&self, section: &str, key: &str, value: &str) -> zbus::Result<()>;
 }
 
 #[derive(Parser)]
@@ -39,11 +41,18 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// get key value
-    Get { key: String },
-    /// set key value
-    Set { key: String, value: String },
-    /// monitor property changes in real-time
+    /// Get value: swift-ctl get <section> <key>
+    Get { 
+        section: String, 
+        key: String 
+    },
+    /// Set value: swift-ctl set <section> <key> <value>
+    Set { 
+        section: String, 
+        key: String, 
+        value: String 
+    },
+    /// Monitor property changes in real-time
     Monitor,
 }
 
@@ -54,24 +63,25 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let proxy = SwiftConfigProxy::new(&conn).await?;
 
     match &cli.command {
-        Commands::Get { key } => {
-            let val = proxy.get_property(key).await?;
+        Commands::Get { section, key } => {
+            let val = proxy.get_value(section, key).await?;
             if val.is_empty() {
-                println!("Key '{}' is not set.", key);
+                println!("Value for '{}/{}' is not set or empty.", section, key);
             } else {
                 println!("{}", val);
             }
         }
-        Commands::Set { key, value } => {
-            proxy.set_property(key, value).await?;
-            println!("Set: {} = {}", key, value);
+        Commands::Set { section, key, value } => {
+            proxy.set_value(section, key, value).await?;
+            println!("Successfully set: [{}] {} = {}", section, key, value);
         }
         Commands::Monitor => {
-            println!("--- Swift Monitor: Waiting for signals ---");
+            println!("--- Swift Monitor: Waiting for signals (Multi-section) ---");
             let mut signals = proxy.receive_notify().await?;
             while let Some(sig) = signals.next().await {
                 let args = sig.args()?;
-                println!("CHANGE: [{}] -> '{}'", args.key, args.value);
+                println!("CHANGE: Section: [{}], Key: '{}' -> New Value: '{}'", 
+                    args.section, args.key, args.value);
             }
         }
     }
