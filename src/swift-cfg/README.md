@@ -45,5 +45,5 @@ busctl --user monitor org.swift.Config
 ```bash
 systemctl --user status swift-cfg
 ```
-### Dedicated tools
+## Dedicated tools
 You can also manually manage configuration through a dedicated tools. See `swift-ctl` for CLI or Swift Settings for GUI.
