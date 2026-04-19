@@ -1,6 +1,6 @@
 Name:           swift-desktop
 Version:        1.0.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        SWIFT Desktop Environment Components
 License:        GPL-3.0-or-later
 URL:            https://github.com/Emkamil/swift-desktop
