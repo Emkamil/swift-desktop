@@ -1,2 +1,10 @@
-[default]
-present = 1
+[appearance]
+theme = "dark"
+accent-color = "blue"
+
+[system]
+present = "1"
+auto-update = "true"
+
+[experimental]
+new-feature = "off"

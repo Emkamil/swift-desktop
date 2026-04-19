@@ -15,6 +15,7 @@
 
 use crate::store::Store;
 use std::sync::Arc;
+use std::collections::HashMap;
 use zbus::{SignalContext, interface};
 
 pub struct SwiftConfigInterface {
@@ -23,27 +24,33 @@ pub struct SwiftConfigInterface {
 
 #[interface(name = "org.swift.Config")]
 impl SwiftConfigInterface {
-    async fn get_property(&self, key: &str) -> String {
+    async fn get_value(&self, section: &str, key: &str) -> String {
         let db = self.store.data.read().unwrap();
-        db.settings.get(key).cloned().unwrap_or_default()
+        db.categories
+            .get(section)
+            .and_then(|cat| cat.get(key))
+            .cloned()
+            .unwrap_or_default()
     }
 
-    async fn set_property(
+    async fn set_value(
         &self,
         #[zbus(signal_context)] ctxt: SignalContext<'_>,
+        section: String,
         key: String,
         value: String,
     ) -> zbus::fdo::Result<()> {
         {
             let mut db = self.store.data.write().unwrap();
-            db.settings.insert(key.clone(), value.clone());
+            let cat = db.categories.entry(section.clone()).or_insert_with(HashMap::new);
+            cat.insert(key.clone(), value.clone());
         }
 
         self.store
             .save()
             .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?;
 
-        Self::notify(ctxt, &key, &value)
+        Self::notify(ctxt, &section, &key, &value)
             .await
             .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?;
 
@@ -51,5 +58,5 @@ impl SwiftConfigInterface {
     }
 
     #[zbus(signal)]
-    pub async fn notify(ctxt: SignalContext<'_>, key: &str, value: &str) -> zbus::Result<()>;
+    pub async fn notify(ctxt: SignalContext<'_>, section: &str, key: &str, value: &str) -> zbus::Result<()>;
 }

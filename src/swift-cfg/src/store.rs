@@ -21,7 +21,8 @@ use std::sync::RwLock;
 
 #[derive(Serialize, Deserialize, Clone, Default, Debug)]
 pub struct ConfigStorage {
-    pub settings: HashMap<String, String>,
+    #[serde(flatten)]
+    pub categories: HashMap<String, HashMap<String, String>>,
 }
 
 pub struct Store {
@@ -31,27 +32,27 @@ pub struct Store {
 
 impl Store {
     pub fn new() -> Self {
-        // user: ~/.config/swift/settings.toml
-        let home = std::env::var("HOME").expect(
-            "Warning: HOME environment variable is missing. Some features may not work properly.",
-        );
+        let home = std::env::var("HOME").expect("Warning: HOME environment variable is missing.");
         let user_path = PathBuf::from(home).join(".config/swift/settings.toml");
-
-        // system-default: /usr/share/swift/defaults.toml
         let system_path = PathBuf::from("/usr/share/swift/defaults.toml");
 
         let mut final_config = ConfigStorage::default();
 
-        // system-default
+        // 1. Ładowanie systemowych domyślnych
         if let Some(sys_data) = Self::load_file(&system_path) {
-            final_config.settings.extend(sys_data.settings);
+            final_config.categories = sys_data.categories;
         } else {
             eprintln!("Warning: Default configuration not found in /usr/share/swift/defaults.toml");
         }
 
-        // user config
+        // 2. Ładowanie i scalanie ustawień użytkownika (Deep Merge)
         if let Some(user_data) = Self::load_file(&user_path) {
-            final_config.settings.extend(user_data.settings);
+            for (category_name, settings) in user_data.categories {
+                let cat = final_config.categories.entry(category_name).or_insert_with(HashMap::new);
+                for (key, value) in settings {
+                    cat.insert(key, value);
+                }
+            }
         }
 
         Self {
@@ -61,23 +62,15 @@ impl Store {
     }
 
     fn load_file(path: &PathBuf) -> Option<ConfigStorage> {
-        if !path.exists() {
-            return None;
-        }
-
+        if !path.exists() { return None; }
         let content = fs::read_to_string(path).ok()?;
-        toml::from_str(&content).ok()
+        toml::from_str(&content).map_err(|e| eprintln!("TOML Error in {:?}: {}", path, e)).ok()
     }
 
     pub fn save(&self) -> std::io::Result<()> {
         let db = self.data.read().unwrap();
         let toml_str = toml::to_string_pretty(&*db).unwrap();
-
-        if let Some(parent) = self.user_path.parent() {
-            fs::create_dir_all(parent)?;
-        }
-
-        fs::write(&self.user_path, toml_str)?;
-        Ok(())
+        if let Some(parent) = self.user_path.parent() { fs::create_dir_all(parent)?; }
+        fs::write(&self.user_path, toml_str)
     }
 }
