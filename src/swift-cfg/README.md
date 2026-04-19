@@ -22,7 +22,7 @@ enable = "1"
 ### DBus Interface
 
 Service: `org.swift.Config`  
-Object Path: `/org/swift/Config` 
+Object Path: `/org/swift/Config`
 Interface: `org.swift.Config`
 
 **Get value**
