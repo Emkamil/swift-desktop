@@ -1,0 +1,136 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: swift-about\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-03 22:00+0200\n"
+"PO-Revision-Date: 2026-04-03 22:05+0200\n"
+"Last-Translator: Szanowny Mości Pan\n"
+"Language-Team: Polish\n"
+"Language: pl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: src/main.rs:53
+msgid "About Swift"
+msgstr "O Swift"
+
+#: src/main.rs:77
+msgid "System"
+msgstr "System"
+
+#: src/main.rs:80
+msgid "Information"
+msgstr "Informacje"
+
+#: src/main.rs:83
+msgid "Credits"
+msgstr "Podziękowania"
+
+#: src/main.rs:86
+msgid "Licenses"
+msgstr "Licencje"
+
+#: src/main.rs:114
+msgid "System Information"
+msgstr "Informacje o systemie"
+
+#: src/main.rs:146
+msgid "Device"
+msgstr "Urządzenie"
+
+#: src/main.rs:151
+msgid "Operating System"
+msgstr "System operacyjny"
+
+#: src/main.rs:156
+msgid "System Type"
+msgstr "Typ systemu"
+
+#: src/main.rs:164
+msgid "Swift Desktop Version"
+msgstr "Wersja pulpitu Swift"
+
+#: src/main.rs:169
+msgid "Kernel Version"
+msgstr "Wersja jądra"
+
+#: src/main.rs:174
+msgid "Windowing System"
+msgstr "System okien"
+
+#: src/main.rs:179
+msgid "Processor"
+msgstr "Procesor"
+
+#: src/main.rs:184
+msgid "Memory"
+msgstr "Pamięć"
+
+#: src/main.rs:189
+msgid "Graphics Unit"
+msgstr "Karta graficzna"
+
+#: src/main.rs:190
+msgid "Graphics Units"
+msgstr "Karty graficzne"
+
+#: src/main.rs:265
+msgid "Swift is a set of programs that together provide a fully functional desktop environment. Some of them:"
+msgstr "Swift to zestaw programów, które razem tworzą w pełni funkcjonalne środowisko graficzne. Oto niektóre z nich:"
+
+#: src/main.rs:276
+msgid "Window Manager"
+msgstr "Menedżer okien"
+
+#: src/main.rs:279
+msgid "Manages the placement of windows on the screen."
+msgstr "Zarządza rozmieszczeniem okien na ekranie."
+
+#: src/main.rs:282
+msgid "Panel"
+msgstr "Panel"
+
+#: src/main.rs:284
+msgid "Provides a place for window buttons and menus."
+msgstr "Miejsce na przyciski okien oraz menu."
+
+#: src/main.rs:287
+msgid "Desktop Manager"
+msgstr "Menedżer pulpitu"
+
+#: src/main.rs:289
+msgid "Sets desktop backgrounds and icons."
+msgstr "Ustawia tła pulpitu oraz ikony."
+
+#: src/main.rs:292
+msgid "File Manager"
+msgstr "Menedżer plików"
+
+#: src/main.rs:294
+msgid "Manages files in a modern and fast way."
+msgstr "Zarządza plikami w nowoczesny i szybki sposób."
+
+#: src/main.rs:445
+msgid "Close"
+msgstr "Zamknij"
+
+#: src/main.rs:198
+msgid "N/A"
+msgstr "Brak danych"
+
+msgid "Error"
+msgstr "Błąd"
+
+msgid "License file not found"
+msgstr "Plik licencji nie został odnaleziony"
+
+msgid "Core developers"
+msgstr "Główni deweloperzy"
+
+msgid "Legal Information"
+msgstr "Informacje prawne"
+
+msgid "Swift components are licensed under:"
+msgstr "Komponenty Swift są udostępniane na licencjach:"

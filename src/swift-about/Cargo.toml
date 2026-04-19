@@ -1,0 +1,13 @@
+# Copyright (C) 2026  Kamil Machowski
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+[package]
+name = "swift-about"
+version = "1.0.4-2"
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+gtk4 = { workspace = true }
+gettext-rs = { workspace = true }

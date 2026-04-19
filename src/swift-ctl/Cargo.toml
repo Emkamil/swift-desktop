@@ -1,0 +1,14 @@
+# Copyright (C) 2026  Kamil Machowski
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+[package]
+name = "swift-ctl"
+version = "1.0.0"
+edition = "2024"
+license = "GPL-3.0-or-later"
+
+[dependencies]
+zbus = "4.0"
+tokio = { version = "1.0", features = ["full"] }
+clap = { version = "4.0", features = ["derive"] }
+futures-util = "0.3"

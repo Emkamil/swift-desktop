@@ -1,0 +1,32 @@
+# Copyright (C) 2026  Kamil Machowski
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+[workspace.package]
+version = "1.0.0"
+authors = ["Kamil Machowski <https://github.com/Emkamil>"]
+edition = "2024"
+license = "GPL-3.0"
+homepage = "https://github.com/Emkamil/swift-desktop"
+
+[workspace]
+members = [
+    "src/swift-cfg",
+    "src/swift-ctl",
+    "src/swift-about",
+]
+resolver = "2"
+
+[workspace.dependencies]
+serde = { version = "1.0", features = ["derive"] }
+zbus = "4.0"
+gtk4 = "0.11"
+glib = "0.18"
+futures-util = "0.3"
+gettext-rs = { version = "0.7", features = ["gettext-system"] }
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

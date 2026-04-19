@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=About Swift
+Name[pl]=O Swift
+Comment=Information about the Swift environment
+Comment[pl]=Informacje o środowisku Swift
+Exec=swift-about
+Icon=swift-about
+Terminal=false
+Type=Application
+Categories=Settings;GTK;System;
+NoDisplay=false
+StartupWMClass=swift-about

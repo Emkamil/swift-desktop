@@ -1,0 +1,15 @@
+# Copyright (C) 2026  Kamil Machowski
+# SPDX-License-Identifier: GPL-3.0-or-laters
+
+[package]
+name = "libswift"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+license.workspace = trues
+
+[dependencies]
+gtk4 = { workspace = true }
+glib = { workspace = true }
+zbus = { workspace = true }
+futures-util = { workspace = true }
