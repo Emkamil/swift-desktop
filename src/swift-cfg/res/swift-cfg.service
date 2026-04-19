@@ -1,0 +1,12 @@
+[Unit]
+Description=Swift Desktop Configuration Service
+After=network.target dbus.socket
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/swift-cfg
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

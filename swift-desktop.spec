@@ -1,11 +1,10 @@
 Name:           swift-desktop
 Version:        1.0.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        SWIFT Desktop Environment Components
 License:        GPL-3.0-or-later
 URL:            https://github.com/Emkamil/swift-desktop
 
-# Using rpkg to pack the entire workspace repository
 Source:         {{{ git_dir_pack }}}
 
 BuildRequires:  cargo
@@ -13,63 +12,72 @@ BuildRequires:  rust
 BuildRequires:  pkgconfig(gtk4)
 BuildRequires:  pkgconfig(libadwaita-1)
 BuildRequires:  gettext
+# Required for systemd macros
+BuildRequires:  systemd-rpm-macros
 
 %description
 Primary components and libraries for the SWIFT Desktop Environment.
 
-# --- SUBPACKAGE: swift-about ---
 %package -n swift-about
-Summary:        Swift Desktop About Dialog
+Summary:        SWIFT Desktop About Dialog
 %description -n swift-about
-About dialog for the Swift Desktop environment.
+A modern about dialog for the SWIFT desktop environment.
 
-# --- SUBPACKAGE: swift-cfg (Background Service) ---
 %package -n swift-cfg
 Summary:        SWIFT Desktop Configuration Service
-%description -n swift-cfg
-Background service handling system configuration via DBus interface. 
-Includes default settings management.
+%{?systemd_requires}
 
-# --- SUBPACKAGE: swift-ctl (CLI Tool) ---
+%description -n swift-cfg
+Background service handling system configuration via DBus interface.
+Includes default settings management and systemd service integration.
+
 %package -n swift-ctl
 Summary:        SWIFT Desktop Control Tool
 %description -n swift-ctl
-Command-line interface for manual configuration and management of 
-Swift desktop settings.
+Command-line interface for managing SWIFT desktop settings.
 
 %prep
-# Standard setup for rpkg-based workspace
 %setup -q -n %{name}
 
 %build
-# Build all workspace members at once
 cargo build --release
 
 %install
-# Create directory structure
 mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{_datadir}/swift/licenses
-mkdir -p %{buildroot}%{_datadir}/locale/pl/LC_MESSAGES
+mkdir -p %{buildroot}%{_unitdir}
 
 # --- Install: swift-about ---
 install -m 0755 target/release/swift-about %{buildroot}%{_bindir}/swift-about
 install -D -m 0644 src/swift-about/res/swift-about.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/swift-about.svg
 install -D -m 0644 src/swift-about/res/swift-about-symbolic.svg %{buildroot}%{_datadir}/icons/hicolor/symbolic/apps/swift-about-symbolic.svg
 install -D -m 0644 src/swift-about/res/swift-about.desktop %{buildroot}%{_datadir}/applications/swift-about.desktop
+mkdir -p %{buildroot}%{_datadir}/locale/pl/LC_MESSAGES
 msgfmt src/swift-about/po/pl.po -o %{buildroot}%{_datadir}/locale/pl/LC_MESSAGES/swift-about.mo
 
-# --- Install: swift-cfg (Background service & defaults) ---
+# --- Install: swift-cfg (Service & Defaults) ---
 install -m 0755 target/release/swift-cfg %{buildroot}%{_bindir}/swift-cfg
-# defaults.toml is intentionally NOT marked as %config to ensure it updates every time
 install -D -m 0644 src/swift-cfg/res/defaults.toml %{buildroot}%{_datadir}/swift/defaults.toml
+# Installing the systemd service unit
+install -p -m 0644 src/swift-cfg/res/swift-cfg.service %{buildroot}%{_unitdir}/swift-cfg.service
 
-# --- Install: swift-ctl (CLI tool) ---
+# --- Install: swift-ctl ---
 install -m 0755 target/release/swift-ctl %{buildroot}%{_bindir}/swift-ctl
 
 # --- Shared resources ---
 install -p -m 0644 src/swift-about/res/licenses/*.txt %{buildroot}%{_datadir}/swift/licenses/
 
 %find_lang swift-about
+
+# --- Systemd post-install scripts for swift-cfg ---
+%post -n swift-cfg
+%systemd_post swift-cfg.service
+
+%preun -n swift-cfg
+%systemd_preun swift-cfg.service
+
+%postun -n swift-cfg
+%systemd_postun_with_restart swift-cfg.service
 
 # --- Files: swift-about ---
 %files -n swift-about -f swift-about.lang
@@ -83,13 +91,8 @@ install -p -m 0644 src/swift-about/res/licenses/*.txt %{buildroot}%{_datadir}/sw
 %files -n swift-cfg
 %{_bindir}/swift-cfg
 %{_datadir}/swift/defaults.toml
+%{_unitdir}/swift-cfg.service
 
 # --- Files: swift-ctl ---
 %files -n swift-ctl
 %{_bindir}/swift-ctl
-
-%changelog
-* Sun Apr 19 2026 Kamil <emkamil@example.com> - 1.0.4-1
-- Migrated to Cargo Workspace unified build system
-- Integrated swift-about, swift-cfg, and swift-ctl into a single SPEC
-- Ensured defaults.toml is overwritten on every update for swift-cfg
